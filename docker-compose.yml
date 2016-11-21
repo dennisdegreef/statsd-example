@@ -1,0 +1,40 @@
+version: '2'
+services:
+  app:
+    image: php:5.6
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app/
+    command: php -S 0.0.0.0:8000 /app/web/index.php
+    depends_on:
+      - collectd
+    links:
+      - collectd
+
+  collectd:
+#    build: docker/collectd
+    image: link0/collectd
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    expose:
+      - "8125"
+
+  influxdb:
+#    build: docker/influxdb
+    image: link0/influxdb
+    ports:
+      - "8083:8083"
+    expose:
+      - "8083"
+      - "8086"
+
+  grafana:
+#    build: docker/grafana/Dockerfile
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
